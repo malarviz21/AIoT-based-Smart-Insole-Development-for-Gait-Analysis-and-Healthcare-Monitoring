@@ -22,7 +22,7 @@ for label in range(1, 14):  # 13 yoga poses
     for file in os.listdir(base_path):
         file_path = os.path.join(base_path, file)
 
-        # Load the .txt file as a dataframe, assuming it's comma-separated
+        # Load the .txt file as a dataframe
         txt_data = pd.read_csv(file_path, delimiter=',', header=None) 
         # Handle NaN values (drop or fill them)
         txt_data = np.nan_to_num(txt_data, nan=0.0)
