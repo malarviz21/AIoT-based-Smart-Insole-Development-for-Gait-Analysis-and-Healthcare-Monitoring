@@ -51,14 +51,13 @@ def load_multiple_files(base_dir, time_steps):
 
                     # Append the features and corresponding labels
                     all_features.append(features)
-                    all_labels.extend([label] * features.shape[0])  # Assign the same label to all samples in the file
+                    all_labels.extend([label] * features.shape[0]) 
 
     # Concatenate all features and labels into a single dataset
     all_features = np.vstack(all_features)
     return all_features, all_labels
 
 
-# Path to the folder containing your yoga pose CSV files
 file_directory = 'C:/Users/Malar/Desktop/Malarvizhi_Data/latest_data'
 
 time_steps = 8  # Define time steps to fit 32 channels
@@ -86,7 +85,7 @@ test_dataset = YogaPoseDataset(X_test, y_test)
 train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
 
-# Now calculate num_features from the reshaped data
+
 num_features = X_train.shape[2]
 
 
@@ -114,7 +113,7 @@ class CNNGRU(nn.Module):
     def forward(self, x):
         # CNN with BatchNorm
         x = x.permute(0, 2, 1)
-        x = torch.relu(self.bn1(self.conv1(x)))  # Apply batch normalization after conv1
+        x = torch.relu(self.bn1(self.conv1(x)))  
         x = torch.relu(self.conv2(x))
         x = self.pool(x)
         x = self.dropout_cnn(x)
@@ -122,7 +121,7 @@ class CNNGRU(nn.Module):
         # GRU
         x = x.permute(0, 2, 1)
         gru_out, hn = self.gru(x)  # hn is the last hidden state for each layer
-        x = torch.cat((hn[-2], hn[-1]), dim=1)  # Concatenate the last hidden states from both directions
+        x = torch.cat((hn[-2], hn[-1]), dim=1)  
 
         # Fully connected layers
         x = torch.relu(self.fc1(x))
@@ -153,7 +152,7 @@ def train_model(model, train_loader, criterion, optimizer, val_loader, num_epoch
         for features, labels in train_loader:
             optimizer.zero_grad()
             outputs = model(features)  # Forward pass
-            loss = criterion(outputs, labels)  # Compute loss
+            loss = criterion(outputs, labels) 
             loss.backward()  # Backpropagation
             optimizer.step()  # Optimization
 
@@ -180,7 +179,7 @@ def train_model(model, train_loader, criterion, optimizer, val_loader, num_epoch
         # Early stopping logic
         if val_loss < best_loss:
             best_loss = val_loss
-            torch.save(model.state_dict(), 'best_model_CNNGRU.pt')  # Save the best model
+            torch.save(model.state_dict(), 'best_model_CNNGRU.pt') 
             patience_counter = 0  # Reset patience counter
         else:
             patience_counter += 1
@@ -229,7 +228,6 @@ def load_sensor_data_for_prediction(file_path, time_steps, num_features):
     return sensor_data
 
 
-# Define the predict_pose function
 def predict_pose(model, sensor_data):
     model.eval()
     with torch.no_grad():
@@ -240,7 +238,7 @@ def predict_pose(model, sensor_data):
             raise ValueError(f"Expected 3D input for sensor_data, but got {sensor_data.ndim}D input.")
 
         # Ensure the input shape is correct before passing to the model
-        print(f"Sensor data shape: {sensor_data.shape}")  # Debugging output
+        print(f"Sensor data shape: {sensor_data.shape}") 
 
         # Pass the data to the model for prediction
         outputs = model(sensor_data)
@@ -250,7 +248,6 @@ def predict_pose(model, sensor_data):
         return predicted_pose
 
 
-# Example usage with CSV input
 csv_file_path = 'C:/Users/Malar/PycharmProjects/Gait Analysis/test/collected_data.csv'
 
 
