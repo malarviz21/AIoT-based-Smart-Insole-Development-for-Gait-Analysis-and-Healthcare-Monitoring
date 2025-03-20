@@ -14,17 +14,16 @@ device = 'cpu'
 datas = []
 labels = []
 
-# Base path where the .txt files are located
 base_path = 'C:/Users/Malar/Desktop/NewData_Malar1510/finaldata'
 
-# Load data from .txt files (now handling 13 yoga poses and 32 channels)
+# Load data from .txt files 
 for label in range(1, 14):  # 13 yoga poses
-    # folder_path = os.path.join(base_path, 'yoga' + str(label))  # Folder for each yoga class data
+    # folder_path = os.path.join(base_path, 'yoga' + str(label)) 
     for file in os.listdir(base_path):
         file_path = os.path.join(base_path, file)
 
         # Load the .txt file as a dataframe, assuming it's comma-separated
-        txt_data = pd.read_csv(file_path, delimiter=',', header=None)  # Adjust delimiter if needed
+        txt_data = pd.read_csv(file_path, delimiter=',', header=None) 
         # Handle NaN values (drop or fill them)
         txt_data = np.nan_to_num(txt_data, nan=0.0)
 
@@ -33,12 +32,12 @@ for label in range(1, 14):  # 13 yoga poses
         # Add normalized data and label
         datas.append(normalized_data)
 
-        labels.append(label - 1)  # Adjusting label for zero-based indexing
+        labels.append(label - 1)  
 
 
 
 # Function to convert label to one-hot encoding
-def to_one_hot(label, num_classes=13):  # Updated to 13 classes
+def to_one_hot(label, num_classes=13): 
     one_hot = np.zeros(num_classes)
     one_hot[label] = 1
     return one_hot
@@ -52,7 +51,7 @@ padding_datas = []
 max_length = 0
 for data in datas:
     max_length = max(max_length, len(data))
-    padding_datas.append(data[:, :32])  # Keep 32 columns for 32 channels
+    padding_datas.append(data[:, :32])  
 
 print(max_length)
 
@@ -82,7 +81,7 @@ class CustomDataset(Dataset):
 
     def __getitem__(self, idx):
         sample_data = torch.tensor(self.data[idx], dtype=torch.float32)
-        sample_label = torch.tensor(self.labels[idx], dtype=torch.long)  # Long type for CrossEntropyLoss
+        sample_label = torch.tensor(self.labels[idx], dtype=torch.long)  
         return sample_data, sample_label
 
 
@@ -94,7 +93,6 @@ train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
 
-# CNN-LSTM Model Definition
 # CNN-LSTM Hybrid Model Definition
 class CNNLSTM(nn.Module):
     def __init__(self, num_classes=13):
@@ -157,7 +155,7 @@ def train(model, save_model_path):
     best_acc = 0
     for epoch in range(num_epochs):
         for batch_data, batch_labels in train_loader:
-            batch_data = batch_data.view(-1, max_length, 32).to(device)  # Adjusted for 32 channels
+            batch_data = batch_data.view(-1, max_length, 32).to(device)  
             batch_labels = batch_labels.to(device)
             outputs = model(batch_data)
             loss = criterion(outputs, batch_labels)
@@ -182,7 +180,7 @@ def test(model, model_path=None):
     model.eval()
     with torch.no_grad():
         for batch_data, batch_labels in test_loader:
-            batch_data = batch_data.view(-1, max_length, 32).to(device)  # Adjusted for 32 channels
+            batch_data = batch_data.view(-1, max_length, 32).to(device)  
             outputs = model(batch_data)
             _, predicted = torch.max(outputs.data, 1)
             total += batch_labels.size(0)
