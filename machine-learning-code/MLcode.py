@@ -59,7 +59,7 @@ conf_matrix = confusion_matrix(y_test, y_pred)
 print(conf_matrix)
 
 # Plot confusion matrix
-fig, ax = plt.subplots(figsize=(10, 10))  # Adjust the figure size as needed
+fig, ax = plt.subplots(figsize=(10, 10))  
 cax = ax.matshow(conf_matrix, cmap=plt.cm.Blues)
 fig.colorbar(cax)
 
